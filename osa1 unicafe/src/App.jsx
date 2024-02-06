@@ -9,13 +9,23 @@ const App = () => {
   return <>
     <div>
       <h1>give feedback</h1>
-      <button>good</button>
-      <button>neutral</button>
-      <button>bad</button>
+      <Button text="good" handleClick={() => setGood(prev => prev + 1)} />
+      <Button text="neutral" handleClick={() => setNeutral(prev => prev + 1)} />
+      <Button text="bad" handleClick={() => setBad(prev => prev + 1)} />
     </div>
     <Statistics good={good} neutral={neutral} bad={bad} />
   </>
 
+}
+
+const Button = (props) => {
+  return <button onClick={props.handleClick}>{props.text}</button>
+}
+
+const StatisticsLine = (props) => {
+  return <tr>
+    {props.columns.map(col => <td key={col}>{col}</td>)}
+  </tr>
 }
 
 const Statistics = (props) => {
@@ -29,14 +39,16 @@ const Statistics = (props) => {
 
       {all === 0 ?
         <p>No feedback given</p> :
-        <>
-          <p>good {good}</p>
-          <p>neutral {neutral}</p>
-          <p>bad {bad}</p>
-          <p>all {all}</p>
-          <p>average {(good - bad) / 3}</p>
-          <p>positive {good / (good + neutral + bad) * 100} %</p>
-        </>
+        <table>
+          <tbody>
+            <StatisticsLine columns={[`good`, good]} />
+            <StatisticsLine columns={[`neutral`, neutral]} />
+            <StatisticsLine columns={[`bad`, bad]} />
+            <StatisticsLine columns={[`all`, all]} />
+            <StatisticsLine columns={[`average`, (good - bad) / 3]} />
+            <StatisticsLine columns={[`positive`, `${good / (good + neutral + bad) * 100} %`]} />
+          </tbody>
+        </table>
       }
     </div >
   )
