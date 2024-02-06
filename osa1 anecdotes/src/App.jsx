@@ -12,12 +12,41 @@ const App = () => {
     'The only way to go fast, is to go well.'
   ]
 
-  const [selected, setSelected] = useState(0)
+  const [votes, setVotes] = useState(new Array(anecdotes.length).fill(0));
+
+  const [selected, setSelected] = useState(0);
+
+  let mostVotes = 0;
+  let mostVotesIndex = 0;
+
+  votes.forEach((value, index) => {
+    if (value > mostVotes) {
+      mostVotes = value;
+      mostVotesIndex = index;
+    }
+  });
+
+  function handleVoteClick() {
+    setVotes(prev => {
+      const newVotes = [...prev];
+      newVotes[selected]++;
+      return newVotes;
+    })
+  }
 
   return (
-    <div>
-      {anecdotes[selected]}
-    </div>
+    <>
+      <div>
+        {anecdotes[selected]}
+        <p>has {votes[selected]} votes</p>
+      </div>
+      <button onClick={handleVoteClick}>vote</button>
+      <button onClick={() => { setSelected(Math.floor(Math.random() * anecdotes.length)) }}>next anecdote</button>
+
+      <h3>Anecdote with most votes</h3>
+      {anecdotes[mostVotesIndex]}
+      <p>has {votes[mostVotesIndex]} votes</p>
+    </>
   )
 }
 
