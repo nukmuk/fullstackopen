@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import numbers from "./services/numbers";
 
 const App = () => {
@@ -12,9 +11,7 @@ const App = () => {
   ]);
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((persons) => {
-      setPersons(persons.data);
-    });
+    updatePersons(setPersons);
   }, []);
 
   const handleAddClick = async (e) => {
@@ -183,9 +180,10 @@ function handleDelete(person, setPersons, setNotifications) {
   numbers
     .remove(person.id)
     .then(() => {
-      setPersons((prev) =>
-        prev.filter((listPerson) => listPerson.id !== person.id)
-      );
+      // setPersons((prev) =>
+      //   prev.filter((listPerson) => listPerson.id !== person.id)
+      // );
+      updatePersons(setPersons);
       showNotification({ message: `Removed ${person.name}` }, setNotifications);
     })
     .catch(() => {
