@@ -24,36 +24,57 @@ const App = () => {
         return;
       const person = persons.find((person) => person.name === newName);
       try {
-        await numbers.update(person.id, newPerson);
+        const updatedPerson = await numbers.update(person.id, newPerson);
+
+        if (updatedPerson) {
+          successfulAdd(
+            showNotification,
+            setNotifications,
+            updatedPerson.name,
+            setNewName,
+            setNewNumber
+          );
+        } else {
+          showNotification(
+            { message: `${newName} not found in phonebook`, isError: true },
+            setNotifications
+          );
+        }
+
         updatePersons(setPersons);
-        successfulAdd(
-          showNotification,
-          setNotifications,
-          newName,
-          setNewName,
-          setNewNumber
-        );
       } catch (e) {
         console.log("err", e);
         showNotification(
           {
-            message: `${person.name} has already been removed from server`,
+            message: `${e.response.data.error}`,
+            // message: `${person.name} has already been removed from server`,
             isError: true,
           },
           setNotifications
         );
       }
     } else {
-      await numbers.add(newPerson);
+      try {
+        const addedPerson = await numbers.add(newPerson);
 
-      updatePersons(setPersons);
-      successfulAdd(
-        showNotification,
-        setNotifications,
-        newName,
-        setNewName,
-        setNewNumber
-      );
+        updatePersons(setPersons);
+        successfulAdd(
+          showNotification,
+          setNotifications,
+          addedPerson.name,
+          setNewName,
+          setNewNumber
+        );
+      } catch (e) {
+        console.log(e.response.data);
+        showNotification(
+          {
+            message: `${e.response.data.error}`,
+            isError: true,
+          },
+          setNotifications
+        );
+      }
     }
   };
 
@@ -106,9 +127,9 @@ function successfulAdd(
 }
 
 function updatePersons(setPersons) {
-  numbers.getAll().then((getData) => {
-    console.log(getData);
-    setPersons(getData);
+  numbers.getAll().then((data) => {
+    console.log("set persons to:", data);
+    setPersons(data);
   });
 }
 
