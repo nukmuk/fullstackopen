@@ -1,0 +1,12 @@
+p {
+  margin: 0;
+  display: inline;
+}
+
+.country {
+  margin: 8px 0;
+}
+
+img {
+  max-width: 200px;
+}
