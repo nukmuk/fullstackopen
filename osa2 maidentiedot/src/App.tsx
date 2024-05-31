@@ -14,6 +14,7 @@ type Country = {
     png: string;
     svg: string;
   };
+  latlng: [number, number];
 };
 
 function App() {
@@ -81,24 +82,44 @@ function CountryList(props: {
   setSearch: React.Dispatch<React.SetStateAction<string>>;
   search: string;
 }) {
+  const [weather, setWeather] = useState<Weather | null>(null);
+
+  useEffect(() => {
+    if (props.countries.length !== 1) return setWeather(null);
+    const country = props.countries[0];
+    const fetchData = async () => {
+      const weather = await getTemperature(
+        country.latlng[0],
+        country.latlng[1]
+      );
+      setWeather(weather);
+    };
+    fetchData();
+  }, [props.countries]);
+
   if (props.countries.length > 10 && props.search !== "") {
     return <p>Too many countries, specify another filter</p>;
   } else if (props.countries.length === 1) {
-    const c = props.countries[0];
+    const country = props.countries[0];
     const languages: string[] = [];
-    for (const l in c.languages) {
-      languages.push(c.languages[l]);
+    for (const l in country.languages) {
+      languages.push(country.languages[l]);
     }
 
     return (
       <div>
-        <h1>{c.name.common}</h1>
-        <p>capital {c.capital.join(", ")}</p>
+        <h1>{country.name.common}</h1>
+        <p>capital {country.capital.join(", ")}</p>
         <h3>languages: </h3>
         {languages.map((l) => (
           <li>{l}</li>
         ))}
-        <img src={c.flags.svg} alt={c.flags.alt}></img>
+        <br />
+        <img src={country.flags.svg} alt={country.flags.alt}></img>
+
+        <h1>Weather in {country.name.common}</h1>
+        <p>temperature {weather?.temperature} Celsius</p>
+        <p>wind {weather?.wind} m/s</p>
       </div>
     );
   } else {
@@ -110,6 +131,31 @@ function CountryList(props: {
       </div>
     );
   }
+}
+
+type Weather = {
+  temperature: number;
+  wind: number;
+};
+
+async function getTemperature(lat: number, long: number): Promise<Weather> {
+  type MeteoResult = {
+    current: {
+      temperature_2m: number;
+      wind_speed_10m: number;
+    };
+  };
+
+  const res = await fetch(
+    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&current=temperature_2m,wind_speed_10m`
+  );
+  const result = (await res.json()) as MeteoResult;
+  const weather = {
+    temperature: result.current.temperature_2m,
+    wind: result.current.wind_speed_10m,
+  } as Weather;
+  console.log(lat, long);
+  return weather;
 }
 
 export default App;
