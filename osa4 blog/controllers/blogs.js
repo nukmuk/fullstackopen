@@ -1,5 +1,7 @@
 const blogRouter = require("express").Router();
 const Blog = require("../models/blog");
+const User = require("../models/user");
+const logger = require("../utils/logger");
 
 blogRouter.get("/", (request, response) => {
   Blog.find({}).then((blogs) => {
@@ -7,14 +9,32 @@ blogRouter.get("/", (request, response) => {
   });
 });
 
-blogRouter.post("/", async (request, response) => {
+blogRouter.post("/", async (request, response, next) => {
   try {
-    const blog = new Blog(request.body);
-    const result = await blog.save();
-    response.status(201).json(result);
+    const body = request.body;
+
+    if (!body.userId)
+      return response.status(400).json({ error: "userId required" });
+
+    const user = await User.findById(body.userId);
+    logger.info("userID:", body.userId);
+    logger.info("user:", user);
+
+    const newBlog = new Blog({
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      user: user._id,
+    });
+
+    const savedBlog = await newBlog.save();
+
+    user.blogs = user.blogs.concat(savedBlog._id);
+    await user.save();
+
+    response.status(201).json(savedBlog);
   } catch (e) {
-    console.log("tried to add invalid blog");
-    response.status(400).end();
+    next(e);
   }
 });
 

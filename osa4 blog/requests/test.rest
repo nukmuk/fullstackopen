@@ -6,5 +6,45 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-    "blog": "moro"
+    "title": "moro",
+    "url": "url",
+    "userId": "665f02569f8a4e0295916218"
 }
+
+###
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+    "title": "moro",
+    "url": "url"
+}
+
+###
+
+GET http://localhost:3003/api/users
+
+###
+
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+    "username": "root",
+    "name": "Root",
+    "password": "123"
+}
+
+###
+
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+    "username": "a",
+    "name": "b",
+    "password": "2"
+}
+
+###
+

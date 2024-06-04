@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../app");
 const assert = require("assert");
+const logger = require("../utils/logger");
 
 const Blog = require("../models/blog");
 
@@ -42,6 +43,8 @@ describe("blogs", async () => {
     .expect(201);
 
   const response = await helper.blogsInDb();
+  logger.info("hello", newBlogResponse.status);
+  logger.info("hello", response);
 
   test("can be added with POST request", () => {
     assert.strictEqual(response.length, helper.initialBlogs.length + 1);
