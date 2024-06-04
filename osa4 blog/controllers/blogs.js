@@ -41,14 +41,26 @@ blogRouter.post("/", async (request, response, next) => {
   }
 });
 
-blogRouter.delete("/:id", async (request, response) => {
+blogRouter.delete("/:id", async (request, response, next) => {
   try {
     const id = request.params.id;
+
+    const decodedToken = jwt.verify(request.token, process.env.SECRET);
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: "token invalid" });
+    }
+
+    const blogToDelete = await Blog.findById(id);
+    if (!blogToDelete) return response.status(404).send();
+    logger.info("blog:", blogToDelete);
+    const userString = blogToDelete.user.toString();
+    if (userString !== decodedToken.id)
+      return response.status(401).json({ error: "blog not created by you" });
+
     await Blog.findByIdAndDelete(id);
     response.status(204).send();
   } catch (e) {
-    console.error(e);
-    response.status(400).send();
+    next(e);
   }
 });
 
