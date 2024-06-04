@@ -14,26 +14,20 @@ blogRouter.post("/", async (request, response, next) => {
   try {
     const body = request.body;
 
-    const decodedToken = jwt.verify(request.token, process.env.SECRET);
-    if (!decodedToken.id) {
-      return response.status(401).json({ error: "token invalid" });
-    }
-
-    const user = await User.findById(decodedToken.id);
     logger.info("userID:", body.userId);
-    logger.info("user:", user);
+    logger.info("user:", request.user);
 
     const newBlog = new Blog({
       title: body.title,
       author: body.author,
       url: body.url,
-      user: user._id,
+      user: request.user._id,
     });
 
     const savedBlog = await newBlog.save();
 
-    user.blogs = user.blogs.concat(savedBlog._id);
-    await user.save();
+    request.user.blogs = request.user.blogs.concat(savedBlog._id);
+    await request.user.save();
 
     response.status(201).json(savedBlog);
   } catch (e) {
@@ -45,16 +39,10 @@ blogRouter.delete("/:id", async (request, response, next) => {
   try {
     const id = request.params.id;
 
-    const decodedToken = jwt.verify(request.token, process.env.SECRET);
-    if (!decodedToken.id) {
-      return response.status(401).json({ error: "token invalid" });
-    }
-
     const blogToDelete = await Blog.findById(id);
     if (!blogToDelete) return response.status(404).send();
-    logger.info("blog:", blogToDelete);
     const userString = blogToDelete.user.toString();
-    if (userString !== decodedToken.id)
+    if (userString !== request.user.id)
       return response.status(401).json({ error: "blog not created by you" });
 
     await Blog.findByIdAndDelete(id);
