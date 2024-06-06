@@ -14,8 +14,11 @@ blogRouter.post("/", async (request, response, next) => {
   try {
     const body = request.body;
 
-    logger.info("userID:", body.userId);
-    logger.info("user:", request.user);
+    console.log("token is:", request.token);
+    console.log("user is:", request.user);
+
+    if (!request.user)
+      return response.status(401).send({ error: "not logged in" });
 
     const newBlog = new Blog({
       title: body.title,
@@ -23,6 +26,8 @@ blogRouter.post("/", async (request, response, next) => {
       url: body.url,
       user: request.user._id,
     });
+    console.log("creating blog:", body);
+    console.log("blog:", newBlog);
 
     const savedBlog = await newBlog.save();
 
@@ -41,6 +46,7 @@ blogRouter.delete("/:id", async (request, response, next) => {
 
     const blogToDelete = await Blog.findById(id);
     if (!blogToDelete) return response.status(404).send();
+    if (!request.user) return response.status(401).send();
     const userString = blogToDelete.user.toString();
     if (userString !== request.user.id)
       return response.status(401).json({ error: "blog not created by you" });

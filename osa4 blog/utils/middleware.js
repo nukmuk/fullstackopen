@@ -37,6 +37,7 @@ const errorHandler = (error, request, response, next) => {
 
 const tokenExtractor = (request, response, next) => {
   const authorization = request.get("authorization");
+  console.log("auth, req method:", authorization, request.method);
   if (authorization && authorization.startsWith("Bearer ")) {
     request.token = authorization.replace("Bearer ", "");
   }
@@ -52,6 +53,12 @@ const userExtractor = async (request, response, next) => {
 
   const user = await User.findById(decodedToken.id);
   request.user = user;
+  console.log(
+    "set user to, from token, from id:",
+    request.user,
+    request.token,
+    decodedToken.id
+  );
   next();
 };
 
