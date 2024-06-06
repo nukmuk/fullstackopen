@@ -1,3 +1,5 @@
+const _ = require("lodash/core");
+
 const dummy = (blogs) => {
   return 1;
 };
@@ -21,4 +23,45 @@ const favoriteBlog = (blogs) => {
   return favorite;
 };
 
-module.exports = { dummy, totalLikes, favoriteBlog };
+const mostBlogs = (blogs) => {
+  let authors = {};
+  for (const blog of blogs) {
+    if (!authors[blog.author]) {
+      authors[blog.author] = 1;
+      continue;
+    }
+    authors[blog.author] += 1;
+  }
+  const result = _.reduce(
+    authors,
+    (most, blogs, name) => {
+      console.log(most, blogs, name);
+      if (!most) return { author: name, blogs };
+      if (blogs > most.blogs) return { author: name, blogs };
+      return most;
+    },
+    null
+  );
+  return result;
+};
+
+const mostLikes = (blogs) => {
+  let likes = {};
+  for (const blog of blogs) {
+    if (!likes[blog.author]) likes[blog.author] = 0;
+    likes[blog.author] += blog.likes;
+  }
+  const result = _.reduce(
+    likes,
+    (most, likes, name) => {
+      console.log(most, likes, name);
+      if (!most) return { author: name, likes };
+      if (likes > most.likes) return { author: name, likes };
+      return most;
+    },
+    null
+  );
+  return result;
+};
+
+module.exports = { dummy, totalLikes, favoriteBlog, mostBlogs, mostLikes };

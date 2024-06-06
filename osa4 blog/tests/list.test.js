@@ -21,6 +21,24 @@ test("dummy returns one", () => {
   assert.strictEqual(result, 1);
 });
 
+test("most blogs function works with list of multiple blogs", () => {
+  const correct = {
+    author: "Robert C. Martin",
+    blogs: 3,
+  };
+
+  assert.deepStrictEqual(listHelper.mostBlogs(blogs), correct);
+});
+
+test("most likes function works with list of multiple blogs", () => {
+  const correct = {
+    author: "Edsger W. Dijkstra",
+    likes: 17,
+  };
+
+  assert.deepStrictEqual(listHelper.mostLikes(blogs), correct);
+});
+
 describe("total likes", () => {
   test("when list has only one blog equals the likes of that", () => {
     const result = listHelper.totalLikes(listWithOneBlog);
