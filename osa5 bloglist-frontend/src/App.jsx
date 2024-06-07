@@ -3,10 +3,15 @@ import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import Login from "./components/Login";
 import { CreateBlog } from "./components/CreateBlog";
+import { Notifications } from "./components/Notifications";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState();
+  const [notifications, setNotifications] = useState([
+    { message: "error test", error: true },
+    { message: "test" },
+  ]);
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -23,16 +28,37 @@ const App = () => {
     setUser(null);
   };
 
+  const addNotification = (notification) => {
+    setNotifications((prev) => prev.concat(notification));
+    setTimeout(() => {
+      setNotifications((prev) => prev.filter((n) => n !== notification));
+    }, 5000);
+  };
+
   return (
     <>
-      {!user && <Login user={user} setUser={setUser} />}
+      {!user && (
+        <>
+          <Login
+            user={user}
+            setUser={setUser}
+            notifications={notifications}
+            addNotification={addNotification}
+          />
+        </>
+      )}
       {user && (
         <div>
           <h2>blogs</h2>
+          <Notifications notifications={notifications} />
           <p>
             {user.name} logged in <button onClick={handleLogout}>logout</button>
           </p>
-          <CreateBlog user={user} setBlogs={setBlogs} />
+          <CreateBlog
+            user={user}
+            setBlogs={setBlogs}
+            addNotification={addNotification}
+          />
           {blogs.map((blog) => (
             <Blog key={blog.id} blog={blog} />
           ))}

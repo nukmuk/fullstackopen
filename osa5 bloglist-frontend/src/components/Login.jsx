@@ -1,5 +1,6 @@
 import { useState } from "react";
 import loginService from "../services/login";
+import { Notifications } from "./Notifications";
 
 const Login = (props) => {
   const [username, setUsername] = useState("");
@@ -20,6 +21,10 @@ const Login = (props) => {
       setUsername("");
       setPassword("");
     } catch (exception) {
+      props.addNotification({
+        message: "wrong username or password",
+        error: true,
+      });
       console.error(exception);
     }
   };
@@ -27,6 +32,7 @@ const Login = (props) => {
   return (
     <div>
       <h1>log in to application</h1>
+      <Notifications notifications={props.notifications} />
       <form>
         username{" "}
         <input value={username} onChange={(e) => setUsername(e.target.value)} />

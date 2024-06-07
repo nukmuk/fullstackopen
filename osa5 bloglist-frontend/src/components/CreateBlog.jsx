@@ -7,15 +7,21 @@ export const CreateBlog = (props) => {
   const [url, setUrl] = useState("");
 
   const handleClick = async (event) => {
-    event.preventDefault();
-    const newBlog = { title, author, url };
-    await blogService.create(newBlog, props.user);
-
-    console.log("props:", props);
-
-    blogService.getAll().then((blogs) => props.setBlogs(blogs));
-
-    console.log("blogs set");
+    try {
+      event.preventDefault();
+      const newBlog = { title, author, url };
+      await blogService.create(newBlog, props.user);
+      props.addNotification({
+        message: `a new blog ${newBlog.title} by ${newBlog.author} added`,
+      });
+      blogService.getAll().then((blogs) => props.setBlogs(blogs));
+    } catch (exception) {
+      console.error(exception);
+      props.addNotification({
+        message: exception.response.data.error,
+        error: true,
+      });
+    }
   };
 
   return (

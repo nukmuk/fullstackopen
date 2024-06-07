@@ -1,0 +1,16 @@
+.notification {
+  background: hsl(0, 0%, 80%);
+  width: min-content;
+  padding: 8px;
+  min-width: 240px;
+  margin: 16px 0;
+  outline: 3px solid green;
+  border-radius: 4px;
+  color: green;
+  white-space: nowrap;
+}
+
+.error {
+  outline-color: red;
+  color: red;
+}
