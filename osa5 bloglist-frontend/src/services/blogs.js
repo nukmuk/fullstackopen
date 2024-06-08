@@ -15,4 +15,15 @@ const create = async (newBlog, user) => {
   return response.data;
 };
 
-export default { getAll, create };
+const like = async (blogId) => {
+  const blogs = await getAll();
+  const blogToLike = blogs.find((b) => b.id === blogId);
+  if (!blogToLike) return console.error(`blog ${blogId} to like not found`);
+  const beforeLikes = blogToLike.likes;
+  const response2 = await axios.patch(`${baseUrl}/${blogId}`, {
+    likes: beforeLikes + 1,
+  });
+  return response2.data;
+};
+
+export default { getAll, create, like };

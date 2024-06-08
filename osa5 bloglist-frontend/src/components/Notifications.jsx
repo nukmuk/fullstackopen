@@ -1,4 +1,4 @@
-import "../Notifications.css";
+import "./Notifications.css";
 
 export const Notifications = (props) => {
   return (
