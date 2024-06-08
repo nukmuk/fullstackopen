@@ -6,7 +6,7 @@ export const CreateBlog = (props) => {
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
 
-  const handleClick = async (event) => {
+  const handleCreate = async (event) => {
     try {
       event.preventDefault();
       const newBlog = { title, author, url };
@@ -15,6 +15,10 @@ export const CreateBlog = (props) => {
         message: `a new blog ${newBlog.title} by ${newBlog.author} added`,
       });
       blogService.getAll().then((blogs) => props.setBlogs(blogs));
+      setTitle("");
+      setAuthor("");
+      setUrl("");
+      props.newBlogRef.current.toggleVisibility();
     } catch (exception) {
       console.error(exception);
       props.addNotification({
@@ -36,7 +40,7 @@ export const CreateBlog = (props) => {
         <br />
         url: <input value={url} onChange={(e) => setUrl(e.target.value)} />
         <br />
-        <button onClick={handleClick}>create</button>
+        <button onClick={handleCreate}>create</button>
       </form>
     </>
   );

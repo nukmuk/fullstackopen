@@ -33,7 +33,7 @@ const Login = (props) => {
     <div>
       <h1>log in to application</h1>
       <Notifications notifications={props.notifications} />
-      <form>
+      <form onSubmit={handleLogin}>
         username{" "}
         <input value={username} onChange={(e) => setUsername(e.target.value)} />
         <br />
@@ -44,7 +44,7 @@ const Login = (props) => {
           type="password"
         />
         <br />
-        <button onClick={handleLogin}>login</button>
+        <button type="submit">login</button>
       </form>
     </div>
   );
