@@ -5,9 +5,11 @@ const logger = require("../utils/logger");
 const jwt = require("jsonwebtoken");
 
 blogRouter.get("/", (request, response) => {
-  Blog.find({}).then((blogs) => {
-    response.json(blogs);
-  });
+  Blog.find({})
+    .populate("user", { blogs: 0 })
+    .then((blogs) => {
+      response.json(blogs);
+    });
 });
 
 blogRouter.post("/", async (request, response, next) => {
