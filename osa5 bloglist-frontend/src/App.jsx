@@ -6,6 +6,8 @@ import { CreateBlog } from "./components/CreateBlog";
 import { Notifications } from "./components/Notifications";
 import Togglable from "./components/Togglable";
 
+let notificationIndex = 0;
+
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState();
@@ -29,7 +31,9 @@ const App = () => {
   };
 
   const addNotification = (notification) => {
+    notification.index = notificationIndex;
     setNotifications((prev) => prev.concat(notification));
+    notificationIndex++;
     setTimeout(() => {
       setNotifications((prev) => prev.filter((n) => n !== notification));
     }, 5000);

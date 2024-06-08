@@ -5,7 +5,10 @@ export const Notifications = (props) => {
     <>
       {props.notifications.map((n) => {
         return (
-          <h3 className={`notification ${n.error ? "error" : null}`}>
+          <h3
+            key={n.index}
+            className={`notification ${n.error ? "error" : null}`}
+          >
             {n.message}
           </h3>
         );
@@ -13,5 +16,3 @@ export const Notifications = (props) => {
     </>
   );
 };
-
-const Notification = () => {};
