@@ -1,46 +1,45 @@
 import { useState } from "react";
 import blogService from "../services/blogs";
 
-export const CreateBlog = (props) => {
+export const CreateBlog = ({ createBlog }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
 
   const handleCreate = async (event) => {
-    try {
-      event.preventDefault();
-      const newBlog = { title, author, url };
-      await blogService.create(newBlog, props.user);
-      props.addNotification({
-        message: `a new blog ${newBlog.title} by ${newBlog.author} added`,
-      });
-      blogService.getAll().then((blogs) => props.setBlogs(blogs));
-      setTitle("");
-      setAuthor("");
-      setUrl("");
-      props.newBlogRef.current.toggleVisibility();
-    } catch (exception) {
-      console.error(exception);
-      props.addNotification({
-        message: exception.response.data.error,
-        error: true,
-      });
-    }
+    event.preventDefault();
+    createBlog({ title, author, url });
+    setTitle("");
+    setAuthor("");
+    setUrl("");
   };
 
   return (
     <>
       <h2>create new</h2>
-      <form>
+      <form onSubmit={handleCreate}>
         title:{" "}
-        <input value={title} onChange={(e) => setTitle(e.target.value)} />
+        <input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          id="title-input"
+        />
         <br />
         author:{" "}
-        <input value={author} onChange={(e) => setAuthor(e.target.value)} />
+        <input
+          value={author}
+          onChange={(e) => setAuthor(e.target.value)}
+          id="author-input"
+        />
         <br />
-        url: <input value={url} onChange={(e) => setUrl(e.target.value)} />
+        url:{" "}
+        <input
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          id="url-input"
+        />
         <br />
-        <button onClick={handleCreate}>create</button>
+        <button>create</button>
       </form>
     </>
   );

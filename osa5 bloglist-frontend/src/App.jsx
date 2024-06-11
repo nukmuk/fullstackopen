@@ -30,6 +30,23 @@ const App = () => {
     setUser(null);
   };
 
+  const createBlog = async (newBlog) => {
+    try {
+      await blogService.create(newBlog, user);
+      addNotification({
+        message: `a new blog ${newBlog.title} by ${newBlog.author} added`,
+      });
+      blogService.getAll().then((blogs) => setBlogs(blogs));
+      newBlogRef.current.toggleVisibility();
+    } catch (exception) {
+      console.error(exception);
+      addNotification({
+        message: exception.response.data.error,
+        error: true,
+      });
+    }
+  };
+
   const addNotification = (notification) => {
     notification.index = notificationIndex;
     setNotifications((prev) => prev.concat(notification));
@@ -64,6 +81,7 @@ const App = () => {
               setBlogs={setBlogs}
               addNotification={addNotification}
               newBlogRef={newBlogRef}
+              createBlog={createBlog}
             />
           </Togglable>
           {blogs

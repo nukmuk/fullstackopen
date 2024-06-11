@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Blog from "./Blog";
 import { expect, test } from "vitest";
+import { CreateBlog } from "./CreateBlog";
 
 const testUser = {
   username: "root",
@@ -60,4 +61,28 @@ test("like button works", async () => {
   await user.click(likeButton);
 
   expect(mockHandler.mock.calls).toHaveLength(2);
+});
+
+test.only("<CreateBlog /> updates parent state and calls onSubmit", async () => {
+  const createMock = vi.fn();
+
+  render(<CreateBlog createBlog={createMock} />);
+
+  const user = userEvent.setup();
+
+  const inputs = screen.getAllByRole("textbox");
+  const createButton = screen.getByText("create");
+
+  await user.type(inputs[0], testBlog.title);
+  await user.type(inputs[1], testBlog.author);
+  await user.type(inputs[2], testBlog.url);
+  await user.click(createButton);
+
+  expect(createMock.mock.calls).toHaveLength(1);
+  const correct = {
+    title: testBlog.title,
+    author: testBlog.author,
+    url: testBlog.url,
+  };
+  expect(createMock.mock.calls[0][0]).toMatchObject(correct);
 });
