@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./Blog.css";
 import blogService from "../services/blogs";
 
-const Blog = ({ blog, setBlogs, user, addNotification }) => {
+const Blog = ({ blog, setBlogs, user, addNotification, likeFunction }) => {
   const [visible, setVisible] = useState(false);
 
   const toggleVisibility = (event) => {
@@ -12,7 +12,7 @@ const Blog = ({ blog, setBlogs, user, addNotification }) => {
 
   const handleLike = async (event) => {
     event.preventDefault();
-    const response = await blogService.like(blog.id);
+    const response = await likeFunction(blog.id);
 
     setBlogs((prev) => {
       return prev.map((b) => {

@@ -75,6 +75,7 @@ const App = () => {
                 setBlogs={setBlogs}
                 user={user}
                 addNotification={addNotification}
+                likeFunction={blogService.like}
               />
             ))}
         </div>
