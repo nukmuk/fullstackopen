@@ -92,5 +92,51 @@ describe("Blog app", () => {
 
       await expect(removeButtonOther).not.toBeVisible();
     });
+
+    test("blogs are sorted correctly based on likes", async ({ page }) => {
+      await createBlog(page, "first blog", "test author", "example.com");
+      await createBlog(page, "second blog", "test author", "example.com");
+
+      await page.getByText("second blog test author view").waitFor();
+      const viewButtons = await page
+        .getByRole("button", { name: "view" })
+        .all();
+      console.log(viewButtons);
+      for (const viewButton of viewButtons) {
+        await page.getByRole("button", { name: "view" }).first().click();
+      }
+      const likeButtons = await page.getByText("like").all();
+
+      for (let i = 0; i < 3; i++) {
+        await likeButtons[0].click();
+        await page.waitForResponse(
+          (response) =>
+            response.url().includes("/api/blogs") &&
+            response.status() === 200 &&
+            response.request().method() === "GET"
+        );
+      }
+
+      for (let i = 0; i < 5; i++) {
+        await likeButtons[1].click();
+        await page.waitForResponse(
+          (response) =>
+            response.url().includes("/api/blogs") &&
+            response.status() === 200 &&
+            response.request().method() === "GET"
+        );
+      }
+
+      await expect(
+        await page.getByText("likes 3", { exact: false })
+      ).toBeVisible();
+      await expect(
+        await page.getByText("likes 5", { exact: false })
+      ).toBeVisible();
+
+      const blogs = await page.locator(".blog").all();
+
+      await expect(blogs[0]).toContainText("second blog");
+    });
   });
 });
