@@ -25,7 +25,6 @@ const reducer = (state = initialState, action) => {
       return state.map((anecdote) => {
         if (action.payload.id === anecdote.id) {
           anecdote.votes += 1;
-          console.log("after", anecdote);
         }
         return anecdote;
       });
