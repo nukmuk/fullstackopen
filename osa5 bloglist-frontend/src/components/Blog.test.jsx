@@ -63,7 +63,7 @@ test("like button works", async () => {
   expect(mockHandler.mock.calls).toHaveLength(2);
 });
 
-test.only("<CreateBlog /> updates parent state and calls onSubmit", async () => {
+test("<CreateBlog /> updates parent state and calls onSubmit", async () => {
   const createMock = vi.fn();
 
   render(<CreateBlog createBlog={createMock} />);

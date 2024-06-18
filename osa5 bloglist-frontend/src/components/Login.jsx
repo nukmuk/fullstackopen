@@ -35,13 +35,18 @@ const Login = (props) => {
       <Notifications notifications={props.notifications} />
       <form onSubmit={handleLogin}>
         username{" "}
-        <input value={username} onChange={(e) => setUsername(e.target.value)} />
+        <input
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          data-testid="username"
+        />
         <br />
         password{" "}
         <input
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           type="password"
+          data-testid="password"
         />
         <br />
         <button type="submit">login</button>
