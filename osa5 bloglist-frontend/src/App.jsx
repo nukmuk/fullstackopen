@@ -74,11 +74,12 @@ const App = () => {
       )}
       {user && (
         <div>
-          <h2>blogs</h2>
-          <Notifications />
-          <p>
+          <div>
+            <Link to={"/"}>blogs</Link> <Link to={"/users"}>users</Link>{" "}
             {user.name} logged in <button onClick={handleLogout}>logout</button>
-          </p>
+          </div>
+          <h2>blog app</h2>
+          <Notifications />
           <Routes>
             <Route
               path="/"
