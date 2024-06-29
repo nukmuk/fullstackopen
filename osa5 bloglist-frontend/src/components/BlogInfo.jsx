@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import blogs from "../services/blogs";
+import blogService from "../services/blogs";
 
 const BlogInfo = ({ matchedBlog, blogId, likeFunction }) => {
   const [blog, setBlog] = useState(matchedBlog);
 
   useEffect(() => {
     if (!matchedBlog) {
-      blogs.get(blogId).then((newBlog) => setBlog(newBlog));
+      blogService.get(blogId).then((newBlog) => setBlog(newBlog));
     }
   }, []);
 
@@ -20,6 +20,14 @@ const BlogInfo = ({ matchedBlog, blogId, likeFunction }) => {
     setBlog((prev) => ({ ...prev, likes: updatedBlog.likes }));
   };
 
+  const handleComment = async (e) => {
+    e.preventDefault();
+    const comment = e.target.comment.value;
+    e.target.comment.value = "";
+    await blogService.comment(blogId, comment);
+    blogService.get(blogId).then((newBlog) => setBlog(newBlog));
+  };
+
   return (
     <div>
       <h1>
@@ -30,6 +38,16 @@ const BlogInfo = ({ matchedBlog, blogId, likeFunction }) => {
       {blog.likes} likes <button onClick={handleLike}>like</button>
       <br />
       added by {blog.user.name}
+      <h2>comments</h2>
+      <form onSubmit={handleComment}>
+        <input name="comment" />
+        <button>add comment</button>
+      </form>
+      <ul>
+        {blog.comments.map((c) => (
+          <li key={c._id}>{c.content}</li>
+        ))}
+      </ul>
     </div>
   );
 };
