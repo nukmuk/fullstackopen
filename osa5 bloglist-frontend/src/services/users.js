@@ -4,5 +4,9 @@ const getAll = async () => {
   const res = await axios.get(baseUrl);
   return res.data;
 };
+const get = async (id) => {
+  const res = await axios.get(`${baseUrl}/${id}`);
+  return res.data;
+};
 
-export default { getAll };
+export default { getAll, get };

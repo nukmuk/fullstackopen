@@ -12,16 +12,24 @@ import {
   createBlog as createNewBlog,
 } from "./reducers/blogReducer";
 import { initializeUser, setUser } from "./reducers/userReducer";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useMatch } from "react-router-dom";
 import Users from "./components/Users";
+import User from "./components/User";
 
 const App = () => {
   const blogs = useSelector((state) => state.blogs);
   const user = useSelector((state) => state.user);
+  const users = useSelector((state) => state.users);
 
   const newBlogRef = useRef();
 
   const dispatch = useDispatch();
+
+  const userMatch = useMatch("/users/:id");
+  const userMatchId = userMatch ? userMatch.params.id : null;
+  const matchedUser = userMatch
+    ? users.find((user) => user.id === userMatch.params.id)
+    : null;
 
   useEffect(() => {
     dispatch(initializeBlogs());
@@ -90,6 +98,10 @@ const App = () => {
               }
             />
             <Route path="/users" element={<Users />} />
+            <Route
+              path="/users/:id"
+              element={<User matchedUser={matchedUser} userId={userMatchId} />}
+            ></Route>
           </Routes>
         </div>
       )}

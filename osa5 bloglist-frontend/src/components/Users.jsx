@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import userService from "../services/users";
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { initializeUsers, setUsers } from "../reducers/usersReducer";
 const Users = () => {
-  const [users, setUsers] = useState([]);
+  const dispatch = useDispatch();
+  const users = useSelector((state) => state.users);
 
   useEffect(() => {
-    userService.getAll().then((users) => {
-      setUsers(users);
-      console.log("users set to", users);
-    });
+    dispatch(initializeUsers());
   }, []);
 
   return (
@@ -21,7 +22,9 @@ const Users = () => {
           </tr>
           {users.map((u) => (
             <tr key={u.id}>
-              <td>{u.name}</td>
+              <td>
+                <Link to={`/users/${u.id}`}>{u.name}</Link>
+              </td>
               <td>{u.blogs.length}</td>
             </tr>
           ))}
