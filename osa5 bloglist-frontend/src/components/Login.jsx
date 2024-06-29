@@ -21,7 +21,6 @@ const Login = (props) => {
 
       console.log("user:", user);
 
-      // props.setUser(user);
       dispatch(setUser(user));
       window.localStorage.setItem("user", JSON.stringify(user));
       setUsername("");

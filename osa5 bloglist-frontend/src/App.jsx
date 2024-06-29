@@ -9,14 +9,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { showNotification } from "./reducers/notificationsReducer";
 import {
   initializeBlogs,
-  removeBlog as createNewBlog,
+  createBlog as createNewBlog,
 } from "./reducers/blogReducer";
 import { initializeUser, setUser } from "./reducers/userReducer";
+import { Route, Routes } from "react-router-dom";
+import Users from "./components/Users";
 
 const App = () => {
-  // const [blogsOld, setBlogs] = useState([]);
   const blogs = useSelector((state) => state.blogs);
-  // const [user, setUser] = useState();
   const user = useSelector((state) => state.user);
 
   const newBlogRef = useRef();
@@ -24,9 +24,7 @@ const App = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // blogService.getAll().then((blogs) => setBlogs(blogs));
     dispatch(initializeBlogs());
-    // setUser(JSON.parse(window.localStorage.getItem("user")));
     dispatch(initializeUser());
     console.log(
       "set user to:",
@@ -37,7 +35,6 @@ const App = () => {
   const handleLogout = (event) => {
     event.preventDefault();
     window.localStorage.removeItem("user");
-    // setUser(null);
     dispatch(setUser(null));
   };
 
@@ -45,10 +42,7 @@ const App = () => {
     try {
       const { title, author, url } = newBlog;
       dispatch(createNewBlog(title, author, url, user));
-      // await blogService.create(newBlog, user);
-      // const { title, author } = newBlog;
       dispatch(showNotification(`a new blog ${title} by ${author} added`));
-      // blogService.getAll().then((blogs) => setBlogs(blogs));
       newBlogRef.current.toggleVisibility();
     } catch (exception) {
       console.error(exception);
@@ -70,24 +64,33 @@ const App = () => {
           <p>
             {user.name} logged in <button onClick={handleLogout}>logout</button>
           </p>
-          <Togglable buttonLabel="new blog" ref={newBlogRef}>
-            <CreateBlog
-              user={user}
-              newBlogRef={newBlogRef}
-              createBlog={createBlog}
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <>
+                  <Togglable buttonLabel="new blog" ref={newBlogRef}>
+                    <CreateBlog
+                      user={user}
+                      newBlogRef={newBlogRef}
+                      createBlog={createBlog}
+                    />
+                  </Togglable>
+                  {[...blogs]
+                    .sort((a, b) => b.likes - a.likes)
+                    .map((blog) => (
+                      <Blog
+                        key={blog.id}
+                        blog={blog}
+                        user={user}
+                        likeFunction={blogService.like}
+                      />
+                    ))}
+                </>
+              }
             />
-          </Togglable>
-          {[...blogs]
-            .sort((a, b) => b.likes - a.likes)
-            .map((blog) => (
-              <Blog
-                key={blog.id}
-                blog={blog}
-                // setBlogs={setBlogs}
-                user={user}
-                likeFunction={blogService.like}
-              />
-            ))}
+            <Route path="/users" element={<Users />} />
+          </Routes>
         </div>
       )}
     </>

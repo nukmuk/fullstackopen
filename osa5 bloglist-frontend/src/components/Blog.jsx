@@ -1,6 +1,5 @@
 import { useState } from "react";
 import "./Blog.css";
-import blogService from "../services/blogs";
 import { useDispatch } from "react-redux";
 import { showNotification } from "../reducers/notificationsReducer";
 import { initializeBlogs, removeBlog } from "../reducers/blogReducer";
@@ -45,9 +44,6 @@ const Blog = ({ blog, user, likeFunction }) => {
       )
         return;
 
-      // await blogService.remove(blog.id, user);
-      // console.log("removed", blog);
-      // await setBlogs(await blogService.getAll());
       dispatch(removeBlog(blog.id, user));
     } catch (exception) {
       dispatch(showNotification(exception.response.data.error, true));
