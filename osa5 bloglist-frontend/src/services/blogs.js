@@ -14,6 +14,11 @@ const getAll = () => {
   return request.then((response) => response.data);
 };
 
+const get = (id) => {
+  const request = axios.get(`${baseUrl}/${id}`);
+  return request.then((response) => response.data);
+};
+
 const create = async (newBlog, user) => {
   const config = configFromUser(user);
   const response = await axios.post(baseUrl, newBlog, config);
@@ -37,4 +42,4 @@ const remove = async (blogId, user) => {
   return response;
 };
 
-export default { getAll, create, like, remove };
+export default { getAll, get, create, like, remove };

@@ -12,9 +12,10 @@ import {
   createBlog as createNewBlog,
 } from "./reducers/blogReducer";
 import { initializeUser, setUser } from "./reducers/userReducer";
-import { Route, Routes, useMatch } from "react-router-dom";
+import { Link, Route, Routes, useMatch } from "react-router-dom";
 import Users from "./components/Users";
 import User from "./components/User";
+import BlogInfo from "./components/BlogInfo";
 
 const App = () => {
   const blogs = useSelector((state) => state.blogs);
@@ -29,6 +30,12 @@ const App = () => {
   const userMatchId = userMatch ? userMatch.params.id : null;
   const matchedUser = userMatch
     ? users.find((user) => user.id === userMatch.params.id)
+    : null;
+
+  const blogMatch = useMatch("/blogs/:id");
+  const blogMatchId = blogMatch ? blogMatch.params.id : null;
+  const matchedBlog = blogMatch
+    ? blogs.find((blog) => blog.id === blogMatch.params.id)
     : null;
 
   useEffect(() => {
@@ -87,12 +94,13 @@ const App = () => {
                   {[...blogs]
                     .sort((a, b) => b.likes - a.likes)
                     .map((blog) => (
-                      <Blog
-                        key={blog.id}
-                        blog={blog}
-                        user={user}
-                        likeFunction={blogService.like}
-                      />
+                      <Link key={blog.id} to={`/blogs/${blog.id}`}>
+                        <Blog
+                          blog={blog}
+                          user={user}
+                          likeFunction={blogService.like}
+                        />
+                      </Link>
                     ))}
                 </>
               }
@@ -101,7 +109,17 @@ const App = () => {
             <Route
               path="/users/:id"
               element={<User matchedUser={matchedUser} userId={userMatchId} />}
-            ></Route>
+            />
+            <Route
+              path="/blogs/:id"
+              element={
+                <BlogInfo
+                  matchedBlog={matchedBlog}
+                  blogId={blogMatchId}
+                  likeFunction={blogService.like}
+                />
+              }
+            />
           </Routes>
         </div>
       )}

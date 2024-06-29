@@ -53,7 +53,7 @@ const Blog = ({ blog, user, likeFunction }) => {
   return (
     <div className="blog">
       {blog.title} {blog.author}{" "}
-      <button onClick={toggleVisibility}>{visible ? "hide" : "view"}</button>
+      {/* <button onClick={toggleVisibility}>{visible ? "hide" : "view"}</button> */}
       {visible && (
         <>
           <br />
