@@ -1,10 +1,14 @@
 import { useState } from "react";
 import loginService from "../services/login";
 import { Notifications } from "./Notifications";
+import { showNotification } from "../reducers/notificationsReducer";
+import { useDispatch } from "react-redux";
 
 const Login = (props) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const dispatch = useDispatch();
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -21,10 +25,7 @@ const Login = (props) => {
       setUsername("");
       setPassword("");
     } catch (exception) {
-      props.addNotification({
-        message: "wrong username or password",
-        error: true,
-      });
+      dispatch(showNotification("wrong username or password", true));
       console.error(exception);
     }
   };

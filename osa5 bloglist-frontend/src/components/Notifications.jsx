@@ -1,9 +1,12 @@
+import { useSelector } from "react-redux";
 import "./Notifications.css";
 
-export const Notifications = (props) => {
+export const Notifications = () => {
+  const notifications = useSelector((state) => state.notifications);
+  console.log("notifications:", notifications);
   return (
     <>
-      {props.notifications.map((n) => {
+      {notifications.map((n) => {
         return (
           <h3
             key={n.index}

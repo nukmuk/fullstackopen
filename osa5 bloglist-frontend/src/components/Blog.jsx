@@ -1,9 +1,13 @@
 import { useState } from "react";
 import "./Blog.css";
 import blogService from "../services/blogs";
+import { useDispatch } from "react-redux";
+import { showNotification } from "../reducers/notificationsReducer";
 
-const Blog = ({ blog, setBlogs, user, addNotification, likeFunction }) => {
+const Blog = ({ blog, setBlogs, user, likeFunction }) => {
   const [visible, setVisible] = useState(false);
+
+  const dispatch = useDispatch();
 
   const toggleVisibility = (event) => {
     event.preventDefault();
@@ -44,7 +48,7 @@ const Blog = ({ blog, setBlogs, user, addNotification, likeFunction }) => {
       console.log("removed", blog);
       await setBlogs(await blogService.getAll());
     } catch (exception) {
-      addNotification({ message: exception.response.data.error, error: true });
+      dispatch(showNotification(exception.response.data.error, true));
     }
   };
 

@@ -5,15 +5,16 @@ import Login from "./components/Login";
 import { CreateBlog } from "./components/CreateBlog";
 import { Notifications } from "./components/Notifications";
 import Togglable from "./components/Togglable";
-
-let notificationIndex = 0;
+import { useDispatch } from "react-redux";
+import { showNotification } from "./reducers/notificationsReducer";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState();
-  const [notifications, setNotifications] = useState([]);
 
   const newBlogRef = useRef();
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -33,45 +34,27 @@ const App = () => {
   const createBlog = async (newBlog) => {
     try {
       await blogService.create(newBlog, user);
-      addNotification({
-        message: `a new blog ${newBlog.title} by ${newBlog.author} added`,
-      });
+      const { title, author } = newBlog;
+      dispatch(showNotification(`a new blog ${title} by ${author} added`));
       blogService.getAll().then((blogs) => setBlogs(blogs));
       newBlogRef.current.toggleVisibility();
     } catch (exception) {
       console.error(exception);
-      addNotification({
-        message: exception.response.data.error,
-        error: true,
-      });
+      dispatch(showNotification(exception.response.data.error, true));
     }
-  };
-
-  const addNotification = (notification) => {
-    notification.index = notificationIndex;
-    setNotifications((prev) => prev.concat(notification));
-    notificationIndex++;
-    setTimeout(() => {
-      setNotifications((prev) => prev.filter((n) => n !== notification));
-    }, 5000);
   };
 
   return (
     <>
       {!user && (
         <>
-          <Login
-            user={user}
-            setUser={setUser}
-            notifications={notifications}
-            addNotification={addNotification}
-          />
+          <Login user={user} setUser={setUser} />
         </>
       )}
       {user && (
         <div>
           <h2>blogs</h2>
-          <Notifications notifications={notifications} />
+          <Notifications />
           <p>
             {user.name} logged in <button onClick={handleLogout}>logout</button>
           </p>
@@ -79,7 +62,6 @@ const App = () => {
             <CreateBlog
               user={user}
               setBlogs={setBlogs}
-              addNotification={addNotification}
               newBlogRef={newBlogRef}
               createBlog={createBlog}
             />
@@ -92,7 +74,6 @@ const App = () => {
                 blog={blog}
                 setBlogs={setBlogs}
                 user={user}
-                addNotification={addNotification}
                 likeFunction={blogService.like}
               />
             ))}
