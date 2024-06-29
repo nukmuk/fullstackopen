@@ -17,7 +17,7 @@ const getAll = () => {
 const create = async (newBlog, user) => {
   const config = configFromUser(user);
   const response = await axios.post(baseUrl, newBlog, config);
-  return response.data;
+  return { ...response.data, user };
 };
 
 const like = async (blogId) => {

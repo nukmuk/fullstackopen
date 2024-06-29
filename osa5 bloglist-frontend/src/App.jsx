@@ -5,11 +5,16 @@ import Login from "./components/Login";
 import { CreateBlog } from "./components/CreateBlog";
 import { Notifications } from "./components/Notifications";
 import Togglable from "./components/Togglable";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { showNotification } from "./reducers/notificationsReducer";
+import {
+  initializeBlogs,
+  createBlog as createNewBlog,
+} from "./reducers/blogReducer";
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
+  const [blogsOld, setBlogs] = useState([]);
+  const blogs = useSelector((state) => state.blogs);
   const [user, setUser] = useState();
 
   const newBlogRef = useRef();
@@ -17,7 +22,8 @@ const App = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
+    // blogService.getAll().then((blogs) => setBlogs(blogs));
+    dispatch(initializeBlogs());
     setUser(JSON.parse(window.localStorage.getItem("user")));
     console.log(
       "set user to:",
@@ -33,10 +39,12 @@ const App = () => {
 
   const createBlog = async (newBlog) => {
     try {
-      await blogService.create(newBlog, user);
-      const { title, author } = newBlog;
+      const { title, author, url } = newBlog;
+      dispatch(createNewBlog(title, author, url, user));
+      // await blogService.create(newBlog, user);
+      // const { title, author } = newBlog;
       dispatch(showNotification(`a new blog ${title} by ${author} added`));
-      blogService.getAll().then((blogs) => setBlogs(blogs));
+      // blogService.getAll().then((blogs) => setBlogs(blogs));
       newBlogRef.current.toggleVisibility();
     } catch (exception) {
       console.error(exception);
@@ -61,12 +69,11 @@ const App = () => {
           <Togglable buttonLabel="new blog" ref={newBlogRef}>
             <CreateBlog
               user={user}
-              setBlogs={setBlogs}
               newBlogRef={newBlogRef}
               createBlog={createBlog}
             />
           </Togglable>
-          {blogs
+          {[...blogs]
             .sort((a, b) => b.likes - a.likes)
             .map((blog) => (
               <Blog

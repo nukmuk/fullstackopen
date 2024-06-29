@@ -1,14 +1,7 @@
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
-import notificationsReducer from "./reducers/notificationsReducer";
-
-const store = configureStore({
-  reducer: {
-    notifications: notificationsReducer,
-  },
-});
+import store from "./store";
 
 console.log("store:", store.getState());
 
