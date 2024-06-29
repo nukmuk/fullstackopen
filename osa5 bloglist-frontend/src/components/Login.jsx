@@ -3,6 +3,7 @@ import loginService from "../services/login";
 import { Notifications } from "./Notifications";
 import { showNotification } from "../reducers/notificationsReducer";
 import { useDispatch } from "react-redux";
+import { setUser } from "../reducers/userReducer";
 
 const Login = (props) => {
   const [username, setUsername] = useState("");
@@ -20,7 +21,8 @@ const Login = (props) => {
 
       console.log("user:", user);
 
-      props.setUser(user);
+      // props.setUser(user);
+      dispatch(setUser(user));
       window.localStorage.setItem("user", JSON.stringify(user));
       setUsername("");
       setPassword("");

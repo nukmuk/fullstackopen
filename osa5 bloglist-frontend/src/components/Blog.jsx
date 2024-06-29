@@ -3,8 +3,9 @@ import "./Blog.css";
 import blogService from "../services/blogs";
 import { useDispatch } from "react-redux";
 import { showNotification } from "../reducers/notificationsReducer";
+import { initializeBlogs, removeBlog } from "../reducers/blogReducer";
 
-const Blog = ({ blog, setBlogs, user, likeFunction }) => {
+const Blog = ({ blog, user, likeFunction }) => {
   const [visible, setVisible] = useState(false);
 
   const dispatch = useDispatch();
@@ -18,18 +19,18 @@ const Blog = ({ blog, setBlogs, user, likeFunction }) => {
     event.preventDefault();
     const response = await likeFunction(blog.id);
 
-    setBlogs((prev) => {
-      return prev.map((b) => {
-        if (b.id === blog.id) {
-          b.likes = response.likes;
-        }
-        return b;
-      });
-    });
+    // setBlogs((prev) => {
+    //   return prev.map((b) => {
+    //     if (b.id === blog.id) {
+    //       b.likes = response.likes;
+    //     }
+    //     return b;
+    //   });
+    // });
 
     // or
 
-    // await setBlogs(await blogService.getAll());
+    dispatch(initializeBlogs());
   };
 
   const handleRemove = async (event) => {
@@ -44,9 +45,10 @@ const Blog = ({ blog, setBlogs, user, likeFunction }) => {
       )
         return;
 
-      await blogService.remove(blog.id, user);
-      console.log("removed", blog);
-      await setBlogs(await blogService.getAll());
+      // await blogService.remove(blog.id, user);
+      // console.log("removed", blog);
+      // await setBlogs(await blogService.getAll());
+      dispatch(removeBlog(blog.id, user));
     } catch (exception) {
       dispatch(showNotification(exception.response.data.error, true));
     }

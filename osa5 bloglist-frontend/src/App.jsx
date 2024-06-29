@@ -9,13 +9,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { showNotification } from "./reducers/notificationsReducer";
 import {
   initializeBlogs,
-  createBlog as createNewBlog,
+  removeBlog as createNewBlog,
 } from "./reducers/blogReducer";
+import { initializeUser, setUser } from "./reducers/userReducer";
 
 const App = () => {
-  const [blogsOld, setBlogs] = useState([]);
+  // const [blogsOld, setBlogs] = useState([]);
   const blogs = useSelector((state) => state.blogs);
-  const [user, setUser] = useState();
+  // const [user, setUser] = useState();
+  const user = useSelector((state) => state.user);
 
   const newBlogRef = useRef();
 
@@ -24,17 +26,19 @@ const App = () => {
   useEffect(() => {
     // blogService.getAll().then((blogs) => setBlogs(blogs));
     dispatch(initializeBlogs());
-    setUser(JSON.parse(window.localStorage.getItem("user")));
+    // setUser(JSON.parse(window.localStorage.getItem("user")));
+    dispatch(initializeUser());
     console.log(
       "set user to:",
       JSON.parse(window.localStorage.getItem("user"))
     );
-  }, []);
+  }, [dispatch]);
 
   const handleLogout = (event) => {
     event.preventDefault();
     window.localStorage.removeItem("user");
-    setUser(null);
+    // setUser(null);
+    dispatch(setUser(null));
   };
 
   const createBlog = async (newBlog) => {
@@ -56,7 +60,7 @@ const App = () => {
     <>
       {!user && (
         <>
-          <Login user={user} setUser={setUser} />
+          <Login user={user} />
         </>
       )}
       {user && (
@@ -79,7 +83,7 @@ const App = () => {
               <Blog
                 key={blog.id}
                 blog={blog}
-                setBlogs={setBlogs}
+                // setBlogs={setBlogs}
                 user={user}
                 likeFunction={blogService.like}
               />
