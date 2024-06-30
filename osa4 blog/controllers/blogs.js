@@ -1,8 +1,5 @@
 const blogRouter = require("express").Router();
 const Blog = require("../models/blog");
-const User = require("../models/user");
-const logger = require("../utils/logger");
-const jwt = require("jsonwebtoken");
 
 blogRouter.get("/", (request, response) => {
   Blog.find({})
@@ -10,6 +7,12 @@ blogRouter.get("/", (request, response) => {
     .then((blogs) => {
       response.json(blogs);
     });
+});
+
+blogRouter.get("/:id", async (request, response) => {
+  const id = request.params.id;
+  const resBlog = await Blog.findById(id).populate("user");
+  response.json(resBlog);
 });
 
 blogRouter.post("/", async (request, response, next) => {
@@ -70,6 +73,23 @@ blogRouter.patch("/:id", async (request, response) => {
     response.status(200).send(updatedBlog);
   } catch (e) {
     response.status(400).end();
+  }
+});
+
+blogRouter.post("/:id/comments", async (request, response, next) => {
+  try {
+    const body = request.body;
+    const blogId = request.params.id;
+
+    const blogToUpdate = await Blog.findById(blogId);
+    blogToUpdate.comments.push(body);
+    const savedBlog = await blogToUpdate.save();
+
+    console.log("creating comment, blogId:", body, blogId);
+
+    response.status(201).json(savedBlog);
+  } catch (e) {
+    next(e);
   }
 });
 

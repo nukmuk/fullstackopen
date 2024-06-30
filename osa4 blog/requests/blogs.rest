@@ -25,3 +25,12 @@ Content-Type: application/json
 DELETE http://localhost:3003/api/blogs/665f1212c0c175e1930bbdaf
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpZCI6IjY2NWYwMjY0OWY4YTRlMDI5NTkxNjIyMSIsImlhdCI6MTcxNzUwNzY0N30.oNxL4QMPyu9EmIf8g1tU1Otv0I3LhWUJ4w-aFgm6290
+
+###
+
+POST http://localhost:3003/api/blogs/665f1212c0c175e1930bbdaf/comments
+Content-Type: application/json
+
+{
+    "content": "testi morooo"
+}

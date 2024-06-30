@@ -16,6 +16,19 @@ import { Link, Route, Routes, useMatch } from "react-router-dom";
 import Users from "./components/Users";
 import User from "./components/User";
 import BlogInfo from "./components/BlogInfo";
+import {
+  AppBar,
+  Box,
+  Button,
+  Container,
+  IconButton,
+  Paper,
+  Table,
+  TableBody,
+  TableContainer,
+  Toolbar,
+  Typography,
+} from "@mui/material";
 
 const App = () => {
   const blogs = useSelector((state) => state.blogs);
@@ -66,65 +79,104 @@ const App = () => {
   };
 
   return (
-    <>
-      {!user && (
-        <>
-          <Login user={user} />
-        </>
-      )}
-      {user && (
-        <div>
-          <div>
-            <Link to={"/"}>blogs</Link> <Link to={"/users"}>users</Link>{" "}
-            {user.name} logged in <button onClick={handleLogout}>logout</button>
-          </div>
-          <h2>blog app</h2>
-          <Notifications />
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <>
-                  <Togglable buttonLabel="new blog" ref={newBlogRef}>
-                    <CreateBlog
-                      user={user}
-                      newBlogRef={newBlogRef}
-                      createBlog={createBlog}
-                    />
-                  </Togglable>
-                  {[...blogs]
-                    .sort((a, b) => b.likes - a.likes)
-                    .map((blog) => (
-                      <Link key={blog.id} to={`/blogs/${blog.id}`}>
-                        <Blog
-                          blog={blog}
-                          user={user}
-                          likeFunction={blogService.like}
-                        />
-                      </Link>
-                    ))}
-                </>
-              }
-            />
-            <Route path="/users" element={<Users />} />
-            <Route
-              path="/users/:id"
-              element={<User matchedUser={matchedUser} userId={userMatchId} />}
-            />
-            <Route
-              path="/blogs/:id"
-              element={
-                <BlogInfo
-                  matchedBlog={matchedBlog}
-                  blogId={blogMatchId}
-                  likeFunction={blogService.like}
-                />
-              }
-            />
-          </Routes>
-        </div>
-      )}
-    </>
+    <Container>
+      <Typography variant="body1">
+        {!user && (
+          <>
+            <Login user={user} />
+          </>
+        )}
+        {user && (
+          <Box display="flex" flexDirection="column" gap={1}>
+            <AppBar position="static">
+              <Toolbar>
+                <IconButton
+                  edge="start"
+                  color="inherit"
+                  aria-label="menu"
+                ></IconButton>
+                <Box my={2} gap={2} display="flex" alignItems={"center"}>
+                  <Button color="inherit" component={Link} to={"/"}>
+                    blogs
+                  </Button>
+                  <Button color="inherit" component={Link} to={"/users"}>
+                    users
+                  </Button>
+                  {user.name} logged in{" "}
+                  <Button
+                    color="inherit"
+                    variant="outlined"
+                    onClick={handleLogout}
+                    sx={{ ml: 1 }}
+                  >
+                    logout
+                  </Button>
+                </Box>
+              </Toolbar>
+            </AppBar>
+            <Typography
+              variant="h3"
+              fontFamily={"cursive"}
+              marginTop={0}
+              marginBottom={1}
+            >
+              <b>blog app</b>
+            </Typography>
+            <Notifications />
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <>
+                    <Togglable buttonLabel="new blog" ref={newBlogRef}>
+                      <CreateBlog
+                        user={user}
+                        newBlogRef={newBlogRef}
+                        createBlog={createBlog}
+                      />
+                    </Togglable>
+
+                    <TableContainer component={Paper}>
+                      <Table>
+                        <TableBody>
+                          {[...blogs]
+                            .sort((a, b) => b.likes - a.likes)
+                            .map((blog) => (
+                              <Blog
+                                key={blog.id}
+                                blog={blog}
+                                user={user}
+                                likeFunction={blogService.like}
+                              />
+                            ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </>
+                }
+              />
+              <Route path="/users" element={<Users />} />
+              <Route
+                path="/users/:id"
+                element={
+                  <User matchedUser={matchedUser} userId={userMatchId} />
+                }
+              />
+              <Route
+                path="/blogs/:id"
+                element={
+                  <BlogInfo
+                    matchedBlog={matchedBlog}
+                    blogId={blogMatchId}
+                    likeFunction={blogService.like}
+                  />
+                }
+              />
+            </Routes>
+          </Box>
+        )}
+      </Typography>
+    </Container>
   );
 };
 

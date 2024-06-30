@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
 import "./Notifications.css";
+import { Alert } from "@mui/material";
 
 export const Notifications = () => {
   const notifications = useSelector((state) => state.notifications);
@@ -8,12 +9,13 @@ export const Notifications = () => {
     <>
       {notifications.map((n) => {
         return (
-          <h3
+          <Alert
             key={n.index}
-            className={`notification ${n.error ? "error" : null}`}
+            severity={n.error ? "error" : "success"}
+            // className={`notification ${n.error ? "error" : null}`}
           >
             {n.message}
-          </h3>
+          </Alert>
         );
       })}
     </>
