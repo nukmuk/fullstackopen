@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
 const Author = require("./model/author");
 const Book = require("./model/book");
+const { GraphQLError } = require("graphql");
 
 require("dotenv").config();
 
@@ -61,8 +62,13 @@ const resolvers = {
   Query: {
     bookCount: () => Book.collection.countDocuments(),
     authorCount: () => Author.collection.countDocuments(),
-    allBooks: async (root, args) => {
-      return await Book.find({});
+    allBooks: async (root, { author, genre }) => {
+      let result = [];
+      if (genre) {
+        return await Book.find({ genres: genre });
+      } else {
+        return await Book.find({});
+      }
     },
     allAuthors: async () => {
       const authors = await Author.find({});
@@ -77,16 +83,36 @@ const resolvers = {
       console.log("found author:", author);
       if (!author) {
         author = new Author({ name: args.author });
-        await author.save();
+        try {
+          await author.save();
+        } catch (error) {
+          throw new GraphQLError("Saving author failed", {
+            extensions: {
+              code: "BAD_USER_INPUT",
+              invalidArgs: args.author,
+              error,
+            },
+          });
+        }
       }
       book.author = author;
-      return await book.save();
+      try {
+        return await book.save();
+      } catch (error) {
+        throw new GraphQLError("Saving book failed", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args.title,
+            error,
+          },
+        });
+      }
     },
-    editAuthor: (root, { name, setBornTo }) => {
-      let authorToEdit = authors.find((a) => a.name === name);
+    editAuthor: async (root, { name, setBornTo }) => {
+      let authorToEdit = await Author.findOne({ name });
       if (!authorToEdit) return null;
       authorToEdit.born = setBornTo;
-      return authorToEdit;
+      return authorToEdit.save();
     },
   },
 };
