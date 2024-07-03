@@ -6,6 +6,8 @@ mongoose.set("strictQuery", false);
 const Author = require("./model/author");
 const Book = require("./model/book");
 const { GraphQLError } = require("graphql");
+const User = require("./model/user");
+const jwt = require("jsonwebtoken");
 
 require("dotenv").config();
 
@@ -37,11 +39,23 @@ const typeDefs = `
     bookCount: Int!,
   }
 
+  type User {
+  username: String!
+  favoriteGenre: String!
+  id: ID!
+  }
+
+  type Token {
+    value: String!
+  }
+
+
   type Query {
     bookCount: Int!,
     authorCount: Int!,
     allBooks(author: String, genre: String): [Book]!,
     allAuthors: [Author]!,
+    me: User,
   }
 
   type Mutation {
@@ -55,6 +69,14 @@ const typeDefs = `
       name: String!,
       setBornTo: Int!,
     ): Author,
+    createUser(
+      username: String!
+      favoriteGenre: String!
+    ): User
+    login(
+      username: String!
+      password: String!
+    ): Token,
   }
 `;
 
@@ -65,18 +87,28 @@ const resolvers = {
     allBooks: async (root, { author, genre }) => {
       let result = [];
       if (genre) {
-        return await Book.find({ genres: genre });
+        return Book.find({ genres: genre });
       } else {
-        return await Book.find({});
+        return Book.find({});
       }
     },
     allAuthors: async () => {
       const authors = await Author.find({});
       return authors;
     },
+    me: async (root, args, context) => {
+      return context.currentUser;
+    },
   },
   Mutation: {
-    addBook: async (root, args) => {
+    addBook: async (root, args, context) => {
+      if (!context.currentUser)
+        throw new GraphQLError("not authenticated", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+          },
+        });
+
       args.published = Number.parseInt(args.published);
       const book = new Book({ ...args });
       let author = await Author.findOne({ name: args.author });
@@ -97,7 +129,7 @@ const resolvers = {
       }
       book.author = author;
       try {
-        return await book.save();
+        return book.save();
       } catch (error) {
         throw new GraphQLError("Saving book failed", {
           extensions: {
@@ -108,11 +140,47 @@ const resolvers = {
         });
       }
     },
-    editAuthor: async (root, { name, setBornTo }) => {
+    editAuthor: async (root, { name, setBornTo }, context) => {
+      if (!context.currentUser)
+        throw new GraphQLError("not authenticated", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+          },
+        });
       let authorToEdit = await Author.findOne({ name });
       if (!authorToEdit) return null;
       authorToEdit.born = setBornTo;
       return authorToEdit.save();
+    },
+    createUser: async (root, args) => {
+      const user = new User({ ...args });
+      return user.save().catch((error) => {
+        throw new GraphQLError("Creating the user failed", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args.username,
+            error,
+          },
+        });
+      });
+    },
+    login: async (root, { username, password }) => {
+      const user = await User.findOne({ username });
+
+      if (!user || password !== "secret") {
+        throw new GraphQLError("wrong credentials", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+          },
+        });
+      }
+
+      const userForToken = {
+        username,
+        id: user._id,
+      };
+
+      return { value: jwt.sign(userForToken, process.env.JWT_SECRET) };
     },
   },
 };
@@ -124,6 +192,17 @@ const server = new ApolloServer({
 
 startStandaloneServer(server, {
   listen: { port: 4000 },
+  context: async ({ req, res }) => {
+    const auth = req ? req.headers.authorization : null;
+    if (auth && auth.startsWith("Bearer ")) {
+      const decodedToken = jwt.verify(
+        auth.substring(7),
+        process.env.JWT_SECRET
+      );
+      const currentUser = await User.findById(decodedToken.id);
+      return { currentUser };
+    }
+  },
 }).then(({ url }) => {
   console.log(`Server ready at ${url}`);
 });
