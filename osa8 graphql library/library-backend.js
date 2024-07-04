@@ -87,7 +87,7 @@ const resolvers = {
     allBooks: async (root, { author, genre }) => {
       let search = {};
       if (genre) {
-        search.genre = genres;
+        search.genres = genre;
       }
       const result = await Book.find(search).populate("author");
       console.log("result:", result);
