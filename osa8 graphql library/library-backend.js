@@ -94,7 +94,13 @@ const resolvers = {
     },
     allAuthors: async () => {
       const authors = await Author.find({});
-      return authors;
+      const books = await Book.find({}).populate("author");
+      return authors.map((author) => {
+        author.bookCount = books.filter((book) =>
+          book.author ? book.author.name === author.name : false
+        ).length;
+        return author;
+      });
     },
     me: async (root, args, context) => {
       return context.currentUser;
