@@ -9,6 +9,8 @@ const Books = (props) => {
 
   if (booksResult.loading) return <div>loading...</div>;
 
+  console.log("res:", booksResult);
+
   return (
     <div>
       <h2>books</h2>
@@ -23,7 +25,7 @@ const Books = (props) => {
           {booksResult.data.allBooks.map((a) => (
             <tr key={a.title}>
               <td>{a.title}</td>
-              <td>{a.author}</td>
+              <td>{a.author.name}</td>
               <td>{a.published}</td>
             </tr>
           ))}
