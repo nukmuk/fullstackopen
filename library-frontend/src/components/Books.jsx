@@ -20,10 +20,6 @@ const Books = (props) => {
     return result;
   }, []);
 
-  console.log("genres:", genres);
-
-  console.log("res:", booksResult);
-
   const genreFilter = (book) => (genre ? book.genres.includes(genre) : true);
 
   return (
