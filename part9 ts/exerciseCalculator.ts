@@ -8,6 +8,27 @@ interface Result {
   average: number;
 }
 
+type exerciseInput = {
+  target: number;
+  days: number[];
+};
+
+const parseExerciseArguments = (args: string[]) => {
+  if (args.length < 4) throw new Error("Not enough arguments");
+
+  return args.reduce(
+    (prev, curr, idx) => {
+      if (idx < 2) return prev;
+      if (isNaN(Number(curr)))
+        throw new Error("Provided values were not numbers!");
+      if (idx === 2) prev.target = curr;
+      if (idx > 2) prev.days = prev.days.concat(curr);
+      return prev;
+    },
+    { target: null, days: [] }
+  );
+};
+
 const calculateExercises = (exerciseDone: number[], target: number): Result => {
   const periodLength = exerciseDone.length;
   const trainingDays = exerciseDone.reduce((days, current) => {
@@ -15,8 +36,9 @@ const calculateExercises = (exerciseDone: number[], target: number): Result => {
     return days;
   }, 0);
   const totalExercise = exerciseDone.reduce((acc, curr) => {
-    return acc + curr;
+    return acc + Number(curr);
   }, 0);
+  console.log("total:", totalExercise);
   const average = totalExercise / periodLength;
 
   const success = average >= target;
@@ -44,4 +66,6 @@ const calculateExercises = (exerciseDone: number[], target: number): Result => {
   };
 };
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2));
+const input = parseExerciseArguments(process.argv);
+console.log("input:", input);
+console.log(calculateExercises(input.days, input.target));
