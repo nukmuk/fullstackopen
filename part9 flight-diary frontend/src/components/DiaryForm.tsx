@@ -1,11 +1,13 @@
 import { useState } from "react";
 import diaryService from "../services/diaryService";
-import { DiaryEntry } from "../types";
+import { DiaryEntry, Visibility, Weather } from "../types";
 import { isAxiosError } from "axios";
 
 type DiaryFormProps = {
   setEntries: React.Dispatch<React.SetStateAction<DiaryEntry[]>>;
 };
+
+const inline: React.CSSProperties = { display: "inline" };
 
 const DiaryForm = (props: DiaryFormProps) => {
   const [error, setError] = useState<string | null>(null);
@@ -50,16 +52,30 @@ const DiaryForm = (props: DiaryFormProps) => {
 
       <form onSubmit={handleSubmit}>
         <div>
-          date <input name="date" />
+          date
+          <input type="date" name="date" />
         </div>
         <div>
-          visibility <input name="visibility" />
+          visibility
+          {Object.values(Visibility).map((v) => (
+            <div key={v} style={inline}>
+              <input type="radio" id={v} name="visibility" value={v} />
+              <label htmlFor={v}>{v}</label>
+            </div>
+          ))}
         </div>
         <div>
-          weather <input name="weather" />
+          weather
+          {Object.values(Weather).map((v) => (
+            <div key={v} style={inline}>
+              <input type="radio" id={v} name="weather" value={v} />
+              <label htmlFor={v}>{v}</label>
+            </div>
+          ))}
         </div>
         <div>
-          comment <input name="comment" />
+          comment
+          <input name="comment" />
         </div>
         <button>add</button>
       </form>
