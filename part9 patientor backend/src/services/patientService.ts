@@ -11,7 +11,6 @@ const getPatients = (): Patient[] => {
 
 const getPatient = (id: string): Patient | null => {
   const patient = patients.find((p) => p.id === id);
-  console.log("patient", patient);
   if (!patient) return null;
   return patient;
 };
