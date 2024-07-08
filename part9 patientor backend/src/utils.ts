@@ -1,4 +1,10 @@
-import { Gender, NewPatient } from "./types";
+import {
+  Entry,
+  Gender,
+  NewPatient,
+  NonSensitivePatient,
+  Patient,
+} from "./types";
 
 export const toNewPatient = (object: unknown): NewPatient => {
   if (!object || typeof object !== "object")
@@ -9,7 +15,8 @@ export const toNewPatient = (object: unknown): NewPatient => {
     "ssn" in object &&
     "dateOfBirth" in object &&
     "occupation" in object &&
-    "gender" in object
+    "gender" in object &&
+    "entries" in object
   ) {
     const newPatient = {
       name: parseString(object.name, "name"),
@@ -17,11 +24,19 @@ export const toNewPatient = (object: unknown): NewPatient => {
       dateOfBirth: parseString(object.dateOfBirth, "dateOfBirth"),
       occupation: parseString(object.occupation, "occupation"),
       gender: parseGender(object.gender),
+      entries: object.entries as Entry[],
     };
     return newPatient;
   }
-
+  console.log("error caused by:", object);
   throw new Error("Incorrect data: some fields are missing");
+};
+
+export const toNonSensitivePatient = (
+  patient: Patient
+): NonSensitivePatient => {
+  const { id, name, dateOfBirth, occupation, gender } = patient;
+  return { id, name, dateOfBirth, occupation, gender };
 };
 
 const parseString = (object: unknown, fieldName: string): string => {
