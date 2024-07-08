@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import patientService from "../services/patients";
-import diagnosisService from "../services/diagnoses";
-import { Diagnosis, Gender, Patient } from "../types";
+import patientService from "../../services/patients";
+import diagnosisService from "../../services/diagnoses";
+import { Diagnosis, Gender, Patient } from "../../types";
 import MaleIcon from "@mui/icons-material/Male";
 import FemaleIcon from "@mui/icons-material/Female";
+import EntryDetails from "./EntryDetails";
 
 const PatientInfo = () => {
   const { id } = useParams();
   const [patient, setPatient] = useState<Patient>();
-  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>();
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
 
   useEffect(() => {
     if (id) {
@@ -31,22 +32,17 @@ const PatientInfo = () => {
           <div>ssh: {patient.ssn}</div>
           <div>occupation: {patient.occupation}</div>
           <h2>entries</h2>
-          {patient.entries.map((entry) => {
-            return (
-              <div key={entry.id}>
-                {entry.date} <i>{entry.description}</i>
-                <ul>
-                  {entry.diagnosisCodes?.map((code) => (
-                    <li key={code}>
-                      {code}{" "}
-                      {diagnoses &&
-                        diagnoses.find((d) => d.code === code)?.name}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            );
-          })}
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            {patient.entries.map((entry) => {
+              return (
+                <EntryDetails
+                  entry={entry}
+                  key={entry.id}
+                  diagnoses={diagnoses}
+                />
+              );
+            })}
+          </div>
         </>
       )}
     </>
