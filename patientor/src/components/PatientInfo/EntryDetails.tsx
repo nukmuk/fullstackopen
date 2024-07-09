@@ -5,7 +5,6 @@ import WorkIcon from "@mui/icons-material/Work";
 import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 import { assertNever } from "../../utils";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { styled } from "@mui/material/styles";
 
 type Props = {
   entry: Entry;
@@ -45,6 +44,14 @@ const EntryDetails = ({ entry, diagnoses }: Props) => {
         <>
           <WorkIcon />
           {entry.employerName}
+        </>
+      );
+      extra = (
+        <>
+          <br />
+          <div>{`sickleave start: ${entry.sickLeave?.startDate}`}</div>
+          <div>{`sickleave end: ${entry.sickLeave?.endDate}`}</div>
+          <br />
         </>
       );
       break;

@@ -26,4 +26,22 @@ router.post("/", (req, res) => {
   }
 });
 
+router.post("/:id/entries", (req, res) => {
+  try {
+    const id = req.params.id;
+    const body: unknown = req.body;
+    const patient = patientService.getPatient(id);
+    if (!patient) return res.status(404).json({ error: "patient not found" });
+    const newEntry = patientService.addEntry(patient, body);
+    return res.status(201).json(newEntry);
+  } catch (e) {
+    if (e instanceof Error) {
+      return res.status(400).json({ error: e.message });
+    } else {
+      console.error("error not instanceof Error", e);
+      return res.status(400).json({ error: String(e) });
+    }
+  }
+});
+
 export default router;
